@@ -20,17 +20,7 @@
 #define GKScreenH [UIScreen mainScreen].bounds.size.height
 
 // 判断iPhone X
-#define KIsiPhoneX          ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
-(\
-CGSizeEqualToSize(CGSizeMake(375, 812),[UIScreen mainScreen].bounds.size)\
-||\
-CGSizeEqualToSize(CGSizeMake(812, 375),[UIScreen mainScreen].bounds.size)\
-||\
-CGSizeEqualToSize(CGSizeMake(414, 896),[UIScreen mainScreen].bounds.size)\
-||\
-CGSizeEqualToSize(CGSizeMake(896, 414),[UIScreen mainScreen].bounds.size))\
-:\
-NO)
+#define KIsiPhoneX KIsiPhoneXScreen()
 
 // 安全区域间距
 #define kSafeTopSpace       (KIsiPhoneX ? 24.0f : 0)   // iPhone X顶部多出的距离（刘海）
@@ -82,4 +72,24 @@ typedef NS_ENUM(NSUInteger, GKPhotoBrowserFailStyle) {
     GKPhotoBrowserFailStyleCustom              // 自定义（如：显示HUD）
 };
 
+/**
+ 判断是否刘海屏 iPhone X、iPhone XR、iPhone X Max
+
+ @return YES/NO
+ */
+static inline bool KIsiPhoneXScreen() {
+    if (@available(iOS 11.0, *)) {
+        UIWindow *window = [UIApplication sharedApplication].delegate.window;
+        UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
+//        UIEdgeInsets safeAreaInsets = [UIApplication sharedApplication].windows[0].safeAreaInsets;
+        if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return safeAreaInsets.left > 0.0f;
+        }else {
+            // ios12 非刘海屏safeAreaInsets为（20，0，0，0）,所以大于20.0才是刘海屏
+            return safeAreaInsets.top > 20.0f;
+        }
+    } else {
+        return NO;
+    }
+}
 #endif /* GKPhotoBrowserConfigure_h */
