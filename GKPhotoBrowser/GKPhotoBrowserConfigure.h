@@ -79,7 +79,10 @@ typedef NS_ENUM(NSUInteger, GKPhotoBrowserFailStyle) {
  */
 static inline bool KIsiPhoneXScreen() {
     if (@available(iOS 11.0, *)) {
-        UIWindow *window = [UIApplication sharedApplication].delegate.window;
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        if (!window) {
+            window = [UIApplication sharedApplication].windows.firstObject;
+        }
         UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
 //        UIEdgeInsets safeAreaInsets = [UIApplication sharedApplication].windows[0].safeAreaInsets;
         if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
